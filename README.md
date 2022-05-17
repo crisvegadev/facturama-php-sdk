@@ -8,7 +8,7 @@
 
 ## How do I install it?
 
-    composer require crisvegadev/facturama
+    composer require crisvegadev/facturama-php-sdk
 
 ### Set the environment variables
 
