@@ -5,7 +5,7 @@
 ### Using composer:
 
 ```shell
-composer require crisvegadev/facturama
+composer require crisvegadev/facturama-php-sdk
 ```
 
 ## Setup
