@@ -1,8 +1,8 @@
 theme: jekyll-theme-cayman
 
 title: Facturama PHP SDK
-description: A PHP SDK for Facturama API
-google_analytics: G-F4ZE7W801K
+description: A PHP SDK for Facturama Web API
+google_analytics: G-GY7DND38KK
 
 author:
   name: Cristian Vega
