@@ -68,7 +68,7 @@ class FacturamaClient
         if(isset($this->username) && isset($this->password)){
 
             if ($httpClient && $requestOptions) {
-                throw new \AppException('If argument 3 is provided, argument 4 must be omitted or passed with `null` as value');
+                throw new AppException('If argument 3 is provided, argument 4 must be omitted or passed with `null` as value');
             }
 
             $requestOptions += [
@@ -81,7 +81,7 @@ class FacturamaClient
             $this->client = $httpClient ?: new GuzzleClient($requestOptions);
 
         }else{
-            throw new \AppException('You must provide a username and password');
+            throw new AppException('You must provide a username and password');
         }
 
     }
@@ -199,7 +199,9 @@ class FacturamaClient
 
         } else if ($response->getStatusCode() >= 500) {
 
-            throw new ServerException("A server error occurred", $response->getStatusCode(), null);
+            $dataError = json_decode($response->getBody()->getContents());
+
+            throw new ServerException("A server error occurred on Facturama", $response->getStatusCode(), null, $dataError);
 
         } else {
 

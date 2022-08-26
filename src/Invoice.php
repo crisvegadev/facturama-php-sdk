@@ -9,7 +9,13 @@ use Crisvegadev\Facturama\Exception\ServerException;
 use GuzzleHttp\Exception\GuzzleException;
 use Exception;
 
-class Invoice{
+class Invoice {
+
+    static $facturamaClient;
+
+    public function __construct(FacturamaClient $facturamaClient = null){
+        self::$facturamaClient = $facturamaClient;
+    }
 
     /**
      * Create a new invoice
@@ -29,7 +35,8 @@ class Invoice{
                 throw new Exception('No data provided');
             }
 
-            return FacturamaClient::getInstance()->post('3/cfdis', $data);
+            return self::$facturamaClient->post('3/cfdis', $data);
+//            return FacturamaClient::getInstance()->post('3/cfdis', $data);
 
         } catch (UnauthorizedException $e) {
 
@@ -58,7 +65,7 @@ class Invoice{
                 'statusMessage' => 'Server Error',
                 'message' => $e->getMessage(),
                 'data' => [],
-                'errors' => []
+                'errors' => self::formatError($e->response)
             ];
 
         } catch (BadRequestException $e){
