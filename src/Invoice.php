@@ -35,8 +35,7 @@ class Invoice {
                 throw new Exception('No data provided');
             }
 
-            return self::$facturamaClient->post('3/cfdis', $data);
-//            return FacturamaClient::getInstance()->post('3/cfdis', $data);
+            return FacturamaClient::getInstance()->post('3/cfdis', $data);
 
         } catch (UnauthorizedException $e) {
 
