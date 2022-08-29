@@ -13,8 +13,11 @@ jobs:
   php-tests:
 
     runs-on: ubuntu-latest
-
     steps:
+      - uses: actions/labeler@v4
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Checkout Code
         uses: actions/checkout@v2
 
