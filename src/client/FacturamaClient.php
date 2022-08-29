@@ -1,21 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Crisvegadev\Facturama;
+namespace Crisvegadev\Facturama\client;
 
-use Crisvegadev\Facturama\Exception\UnauthorizedException;
+use Crisvegadev\Facturama\Exception\AppException;
 use Crisvegadev\Facturama\Exception\BadRequestException;
 use Crisvegadev\Facturama\Exception\NotFoundException;
 use Crisvegadev\Facturama\Exception\ResponseException;
 use Crisvegadev\Facturama\Exception\ServerException;
-use Crisvegadev\Facturama\Exception\AppException;
-use GuzzleHttp\Exception\GuzzleException;
+use Crisvegadev\Facturama\Exception\UnauthorizedException;
+use Dotenv\Dotenv;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
-use Exception;
 
-class FacturamaClient
-{
+class FacturamaClient implements FacturamaClientInterface {
+
     const VERSION = '2.0.0';
     const USER_AGENT = 'Facturama-PHP-SDK-CFDI4';
 
@@ -28,28 +28,11 @@ class FacturamaClient
     private array $errors = [];
 
     /**
-     * FacturamaClient constructor.
-     *
-     * @return FacturamaClient
-     *
-     * @throws Exception
+     * @throws AppException
      */
-    public static function getInstance(): FacturamaClient
+    public function __construct()
     {
-        return new self();
-    }
-
-    /**
-     * FacturamaClient constructor.
-     *
-     * @param array $requestOptions
-     * @param null|ClientInterface $httpClient
-     *
-     * @throws Exception
-     */
-    public function __construct(array $requestOptions = [], ClientInterface $httpClient = null)
-    {
-        $dotenv = \Dotenv\Dotenv::createImmutable('./');
+        $dotenv = Dotenv::createImmutable('./');
         $dotenv->safeLoad();
 
         $dotenv->required(['FACTURAMA_SANDBOX_USERNAME', 'FACTURAMA_SANDBOX_PASSWORD', 'FACTURAMA_SANDBOX_URL'])->notEmpty();
@@ -67,18 +50,14 @@ class FacturamaClient
 
         if(isset($this->username) && isset($this->password)){
 
-            if ($httpClient && $requestOptions) {
-                throw new AppException('If argument 3 is provided, argument 4 must be omitted or passed with `null` as value');
-            }
-
-            $requestOptions += [
+            $requestOptions = [
                 RequestOptions::HEADERS => ['User-Agent' => self::USER_AGENT],
                 RequestOptions::AUTH => [$this->username, $this->password],
                 RequestOptions::CONNECT_TIMEOUT => 10,
                 RequestOptions::TIMEOUT => 60,
             ];
 
-            $this->client = $httpClient ?: new GuzzleClient($requestOptions);
+            $this->client = new GuzzleClient($requestOptions);
 
         }else{
             throw new AppException('You must provide a username and password');
@@ -87,84 +66,71 @@ class FacturamaClient
     }
 
     /**
-     * Get Request
-     *
-     * @param string $path
-     * @param array $params
-     *
-     * @return object
-     *
+     * @throws BadRequestException
+     * @throws AppException
+     * @throws UnauthorizedException
+     * @throws ServerException
      * @throws GuzzleException
+     * @throws NotFoundException
      * @throws ResponseException
      */
-    public function get(string $path, array $params = []): object
+    public function get(string $url, array $params = []): object
     {
-        return (object) $this->executeRequest('GET', $path, [RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
+        return $this->executeRequest('GET', $url, [RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
     }
 
     /**
-     * POST Request
-     *
-     * @param string $path
-     * @param array $body
-     * @param array|null $params
-     *
-     * @return object
-     *
+     * @throws AppException
+     * @throws BadRequestException
+     * @throws UnauthorizedException
+     * @throws ServerException
+     * @throws NotFoundException
      * @throws GuzzleException
      * @throws ResponseException
      */
-    public function post(string $path, array $body = [], array $params = null): object
+    public function post(string $url, array $body = [], array $params = []): object
     {
-        return (object) $this->executeRequest('POST', $path, [RequestOptions::JSON => $body, RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
+        return $this->executeRequest('POST', $url, [RequestOptions::JSON => $body, RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
     }
 
     /**
-     * PUT Request
-     *
-     * @param string $path
-     * @param array|null $body
-     * @param array $params
-     *
-     * @return object
-     *
+     * @throws BadRequestException
+     * @throws AppException
+     * @throws UnauthorizedException
+     * @throws ServerException
      * @throws GuzzleException
+     * @throws NotFoundException
      * @throws ResponseException
      */
-    public function put(string $path, array $body = null, array $params = []): object
+    public function put(string $url, array $body = [], array $params = []): object
     {
-        return (object) $this->executeRequest('PUT', $path, [RequestOptions::JSON => $body, RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
+        return $this->executeRequest('PUT', $url, [RequestOptions::JSON => $body, RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
     }
 
     /**
-     * DELETE Request
-     *
-     * @param string $path
-     * @param array $params
-     *
-     * @return object
-     *
+     * @throws BadRequestException
+     * @throws AppException
+     * @throws UnauthorizedException
+     * @throws ServerException
+     * @throws NotFoundException
      * @throws GuzzleException
      * @throws ResponseException
      */
-    public function delete(string $path, array $params = []): object
+    public function delete(string $url, array $params = []): object
     {
-        return (object) $this->executeRequest('DELETE', $path, [RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
+        return $this->executeRequest('DELETE', $url, [RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
     }
 
     /**
-     *
-     * @param string $method
-     * @param string $url
-     * @param array $options
-     *
-     * @return object
-     *
+     * @throws BadRequestException
+     * @throws AppException
+     * @throws UnauthorizedException
+     * @throws ServerException
      * @throws GuzzleException
+     * @throws NotFoundException
      * @throws ResponseException
-     * @throws Exception
      */
-    private function executeRequest(string $method,string $url, array $options = []): object
+    public function executeRequest(string $method, string $url, array $options = []): object
     {
         $response = $this->client->request($method, $this->baseUri.$url, $options);
 
@@ -186,7 +152,6 @@ class FacturamaClient
         } else if ($response->getStatusCode() === 400) {
 
             $dataError = json_decode($response->getBody()->getContents());
-
             throw new BadRequestException('Bad Request',400, null, $dataError);
 
         } else if ($response->getStatusCode() === 401) {
@@ -200,7 +165,6 @@ class FacturamaClient
         } else if ($response->getStatusCode() >= 500) {
 
             $dataError = json_decode($response->getBody()->getContents());
-
             throw new ServerException("A server error occurred on Facturama", $response->getStatusCode(), null, $dataError);
 
         } else {

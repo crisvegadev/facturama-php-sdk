@@ -1,21 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Crisvegadev\Facturama;
 
-use Crisvegadev\Facturama\Exception\UnauthorizedException;
-use Crisvegadev\Facturama\Exception\BadRequestException;
-use Crisvegadev\Facturama\Exception\NotFoundException;
-use Crisvegadev\Facturama\Exception\ServerException;
-use GuzzleHttp\Exception\GuzzleException;
+use Crisvegadev\Facturama\Service\InvoiceService;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
-class Invoice {
-
-    static $facturamaClient;
-
-    public function __construct(FacturamaClient $facturamaClient = null){
-        self::$facturamaClient = $facturamaClient;
-    }
+class Invoice{
 
     /**
      * Create a new invoice
@@ -24,187 +17,44 @@ class Invoice {
      *
      * @return object
      *
-     * @throws Exception
-     * @throws GuzzleException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public static function create(array $data): object
     {
-        try {
-
-            if (empty($data)) {
-                throw new Exception('No data provided');
-            }
-
-            return FacturamaClient::getInstance()->post('3/cfdis', $data);
-
-        } catch (UnauthorizedException $e) {
-
-            return (object) [
-                'statusCode' => 401,
-                'statusMessage' => 'Unauthorized',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (NotFoundException $e) {
-
-            return (object) [
-                'statusCode' => 404,
-                'statusMessage' => 'Not Found',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (ServerException $e) {
-
-            return (object) [
-                'statusCode' => 500,
-                'statusMessage' => 'Server Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => self::formatError($e->response)
-            ];
-
-        } catch (BadRequestException $e){
-
-            return (object) [
-                'statusCode' => 400,
-                'statusMessage' => 'Invalid Request',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => self::formatError($e->response)
-            ];
-
-
-        } catch (Exception $e) {
-
-            return (object) [
-                'statusCode' => 0,
-                'statusMessage' => 'App Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        }
+        return (new Container())->get(InvoiceService::class)->create($data);
     }
 
     /**
-     * Create a new invoice
+     * Get the invoice requested
      *
-     * @param object $response
+     * @param $type = ( payroll | issued )
+     * @param $id = id of the invoice
      *
-     * @return array
+     * @return object
      *
-     * @throws Exception
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    private static function formatError(object $response): array
+    public static function get($id, $type): object
     {
-        $errors = [];
-
-        if (property_exists($response, 'ModelState')) {
-
-            foreach ($response->ModelState as $key => $value) {
-                $errors[$key] = $value[0];
-            }
-        } else  if (property_exists($response, 'Message')) {
-            $errors['message'] = $response->Message;
-        } else {
-            $errors['message'] = 'An error occurred';
-        }
-
-        return $errors;
+        return (new Container())->get(InvoiceService::class)->get($id, $type);
     }
 
     /**
-     * Return a download of the invoice
+     * Get all invoices requested
      *
-     * @param string $fileType =  ( pdf | html, xml )
-     * @param string $type = ( payroll | issued )
-     * @param string $id = id of the invoice
+     * @param $type = ( payroll | issued )
+     * @param $id = id of the invoice
      *
-     * @throws Exception
-     * @throws GuzzleException
+     * @return object
+     *
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    public static function downloadFile(string $fileType, string $type, string $id)
+    public static function getAll($type): object
     {
-        try {
-            $allowedFileType = ['pdf', 'xml', 'html'];
-
-            if (!in_array($fileType, $allowedFileType)) {
-                throw new Exception('El tipo de archivo no es válido');
-            }
-
-            $result = FacturamaClient::getInstance()->get('cfdi/'.$fileType.'/'.$type.'/'.$id, []);
-
-
-            $decoded = base64_decode($result->data->Content);
-            $file = 'invoice.pdf';
-            file_put_contents($file, $decoded);
-
-            if (file_exists($file)) {
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="'.basename($file).'"');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($file));
-                readfile($file);
-                exit;
-            }
-
-        } catch (Exception $e) {
-
-            return (object) [
-                'statusCode' => 0,
-                'statusMessage' => 'App Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        }
-
-    }
-
-    /**
-     * Stream file to browser
-     *
-     * @param string $fileType =  ( pdf | html, xml )
-     * @param string $type = ( payroll | issued )
-     * @param string $id = id of the invoice
-     *
-     * @return string
-     *
-     * @throws Exception
-     * @throws GuzzleException
-     */
-    public static function streamFile(string $fileType, string $type, string $id): string
-    {
-        try {
-            $allowedFileType = ['pdf', 'xml', 'html'];
-
-            if (!in_array($fileType, $allowedFileType)) {
-                throw new Exception('El tipo de archivo no es válido');
-            }
-
-            $result = FacturamaClient::getInstance()->get('cfdi/'.$fileType.'/'.$type.'/'.$id, []);
-
-            return base64_decode($result->data->Content);
-        } catch (Exception $e) {
-
-            return (object) [
-                'statusCode' => 0,
-                'statusMessage' => 'App Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        }
+        return (new Container())->get(InvoiceService::class)->getAll($type);
     }
 
     /**
@@ -217,67 +67,12 @@ class Invoice {
      * @param string|null $uuidReplacement
      * @return object
      *
-     * @throws Exception
-     * @throws GuzzleException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public static function cancel(string $id, string $type, string $motive, string $uuidReplacement = null): object
     {
-        try {
-
-            return FacturamaClient::getInstance()->delete("cfdi/$id?type=$type&motive=$motive&uuidReplacement=$uuidReplacement", []);
-
-        } catch (UnauthorizedException $e) {
-
-            return (object) [
-                'statusCode' => 401,
-                'statusMessage' => 'Unauthorized',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (NotFoundException $e) {
-
-            return (object) [
-                'statusCode' => 404,
-                'statusMessage' => 'Not Found',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (ServerException $e) {
-
-            return (object) [
-                'statusCode' => 500,
-                'statusMessage' => 'Server Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (BadRequestException $e){
-
-            return (object) [
-                'statusCode' => 400,
-                'statusMessage' => 'Invalid Request',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => self::formatError($e->response)
-            ];
-
-
-        } catch (Exception $e) {
-
-            return (object) [
-                'statusCode' => 0,
-                'statusMessage' => 'App Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        }
+        return (new Container())->get(InvoiceService::class)->cancel($id, $type, $motive, $uuidReplacement);
     }
 
     /**
@@ -289,140 +84,29 @@ class Invoice {
      *
      * @return object
      *
-     * @throws Exception
-     * @throws GuzzleException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public static function cancellationAccuse(string $format, string $type, string $id): object
     {
-        try {
-
-            return FacturamaClient::getInstance()->get("acuse/$format/$type/$id", []);
-
-        } catch (UnauthorizedException $e) {
-
-            return (object) [
-                'statusCode' => 401,
-                'statusMessage' => 'Unauthorized',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (NotFoundException $e) {
-
-            return (object) [
-                'statusCode' => 404,
-                'statusMessage' => 'Not Found',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (ServerException $e) {
-
-            return (object) [
-                'statusCode' => 500,
-                'statusMessage' => 'Server Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (BadRequestException $e){
-
-            return (object) [
-                'statusCode' => 400,
-                'statusMessage' => 'Invalid Request',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => self::formatError($e->response)
-            ];
-
-
-        } catch (Exception $e) {
-
-            return (object) [
-                'statusCode' => 0,
-                'statusMessage' => 'App Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        }
+        return (new Container())->get(InvoiceService::class)->cancellationAccuse($format, $type, $id);
     }
 
     /**
-     * Get the invoice requested
+     * Stream file to browser
      *
-     * @param $type = ( payroll | issued )
-     * @param $id = id of the invoice
+     * @param string $fileType =  ( pdf | html, xml )
+     * @param string $type = ( payroll | issued )
+     * @param string $id = id of the invoice
      *
      * @return object
      *
-     * @throws Exception
-     * @throws GuzzleException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    public static function get(string $id, string $type = "issued"): object
+    public static function streamFile(string $fileType, string $type, string $id): object
     {
-        try {
-
-            return FacturamaClient::getInstance()->get('cfdi/'.$id, ["type" => $type]);
-
-        } catch (UnauthorizedException $e) {
-
-            return (object) [
-                'statusCode' => 401,
-                'statusMessage' => 'Unauthorized',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (NotFoundException $e) {
-
-            return (object) [
-                'statusCode' => 404,
-                'statusMessage' => 'Not Found',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (ServerException $e) {
-
-            return (object) [
-                'statusCode' => 500,
-                'statusMessage' => 'Server Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        } catch (BadRequestException $e){
-
-            return (object) [
-                'statusCode' => 400,
-                'statusMessage' => 'Invalid Request',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => self::formatError($e->response)
-            ];
-
-
-        } catch (Exception $e) {
-
-            return (object) [
-                'statusCode' => 0,
-                'statusMessage' => 'App Error',
-                'message' => $e->getMessage(),
-                'data' => [],
-                'errors' => []
-            ];
-
-        }
+        return (new Container())->get(InvoiceService::class)->streamFile($fileType, $type, $id);
     }
-
-
 
 }
