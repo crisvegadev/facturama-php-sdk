@@ -14,9 +14,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    container:
-      image: laravelsail/php81-composer
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
