@@ -1,1 +1,7 @@
 vendor
+.idea
+.phpunit.result.cache
+.phpunit.result.cache.serialized
+.project
+.settings
+composer.lock
