@@ -5,15 +5,17 @@ namespace Invoice;
 use Crisvegadev\Facturama\client\FacturamaClient;
 use Crisvegadev\Facturama\Service\InvoiceService;
 use PHPUnit\Framework\TestCase;
-use TypeError;
 use Exception;
+use TypeError;
 
-class CancelInvoiceTest extends TestCase{
+class DownloadInvoiceTest extends TestCase
+{
 
-    public function testCanCancelAnInvoice(){
+    public function testCanGetPDFonBase64()
+    {
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
-        $facturamaClientMock->method('delete')
+        $facturamaClientMock->method('get')
             ->willReturn((object)[
                 'statusCode' => 200,
                 'statusMessage' => 'Success',
@@ -27,98 +29,102 @@ class CancelInvoiceTest extends TestCase{
             'statusCode' => 200,
             'statusMessage' => 'Success',
             'data' => []
-        ], $invoice->cancel('id', 'issued', '02', null));
+        ], $invoice->streamFile('pdf', 'issued', '02'));
     }
 
-    public function testCannotCancelAnInvoiceIfIdIsMissing(){
+    public function testCannotGetPDFonBase64IfAnyFieldIsMissing()
+    {
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
-        $facturamaClientMock->method('delete')
+        $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancel();
+        $invoice->streamFile();
     }
 
-    public function testIdMustBeString(){
+    public function testFileTypeMustBeProvided()
+    {
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
-        $facturamaClientMock->method('delete')
+        $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancel(id: 1);
+        $invoice->streamFile(type: 'issued', id: '1');
     }
 
-    public function testTypeMustBeProvided(){
+    public function testFileTypeMustBeString(){
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
-        $facturamaClientMock->method('delete')
-            ->willThrowException(new Exception('No status provided'));
+        $facturamaClientMock->method('get')
+            ->willThrowException(new TypeError());
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancel(id: 1);
+        $invoice->streamFile(fileType: 1, type: 'issued', id: '1');
+    }
+
+    public function testTypeMustBeProvided()
+    {
+        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+
+        $facturamaClientMock->method('get')
+            ->willThrowException(new TypeError());
+
+        $invoice = new InvoiceService($facturamaClientMock);
+        $this->assertInstanceOf(InvoiceService::class, $invoice);
+
+        $this->expectException(TypeError::class);
+        $invoice->streamFile(fileType: 'pdf', id: '1');
     }
 
     public function testTypeMustBeString(){
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
-        $facturamaClientMock->method('delete')
+        $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancel(id: '1', type: 1);
+        $invoice->streamFile(fileType: 'pdf', type: 1, id: '1');
     }
 
-    public function testMotiveMustBeProvided(){
+    public function testIdMustBeProvided()
+    {
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
-        $facturamaClientMock->method('delete')
-            ->willThrowException(new Exception('No status provided'));
-
-        $invoice = new InvoiceService($facturamaClientMock);
-        $this->assertInstanceOf(InvoiceService::class, $invoice);
-
-        $this->expectException(TypeError::class);
-        $invoice->cancel(id: '1', type: 'issued');
-    }
-
-    public function testMotiveMustBeString(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
-
-        $facturamaClientMock->method('delete')
+        $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancel(id: '1', type: 'issued', motive: 1);
+        $invoice->streamFile(fileType: 'pdf', type: 'issued');
     }
 
-    public function testUuidReplacementMustBeString(){
+    public function testIdMustBeString(){
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
-        $facturamaClientMock->method('post')
+        $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancel(id: '1', type: 'issued', motive: 'test', uuidReplacement: 1);
+        $invoice->streamFile(fileType: 'pdf', type: 'issued', id: '1');
     }
 
 }

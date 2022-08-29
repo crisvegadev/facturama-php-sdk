@@ -11,6 +11,7 @@ use TypeError;
 
 class CreateInvoiceTest extends TestCase
 {
+
     public function testCanCreateAnInvoiceIfAllIsSuccess(): void
     {
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
@@ -99,4 +100,5 @@ class CreateInvoiceTest extends TestCase
         ], $invoice->create(['data' => 'data']));
 
     }
+
 }

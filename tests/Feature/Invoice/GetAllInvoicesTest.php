@@ -4,12 +4,15 @@ namespace Invoice;
 
 use Crisvegadev\Facturama\client\FacturamaClient;
 use Crisvegadev\Facturama\Service\InvoiceService;
+use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
-class GetInvoiceTest extends TestCase{
+class GetAllInvoicesTest extends TestCase{
 
-    public function testCanGetAnInvoiceById(){
+    public function testCanGetAllInvoices(): void
+    {
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
         $facturamaClientMock->method('get')
@@ -26,33 +29,21 @@ class GetInvoiceTest extends TestCase{
             'statusCode' => 200,
             'statusMessage' => 'Success',
             'data' => []
-        ], $invoice->get('id'));
+        ], $invoice->getAll('issued'));
     }
 
-    public function testCannotGetAnInvoiceIfIdIsMissing(){
+    public function testStatusMustBeProvided()
+    {
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
         $facturamaClientMock->method('get')
-            ->willThrowException(new TypeError());
+            ->willThrowException(new Exception('No status provided'));
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->get();
-    }
-
-    public function testIdMustBeString(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
-
-        $facturamaClientMock->method('get')
-            ->willThrowException(new TypeError());
-
-        $invoice = new InvoiceService($facturamaClientMock);
-        $this->assertInstanceOf(InvoiceService::class, $invoice);
-
-        $this->expectException(TypeError::class);
-        $invoice->get(id: 1);
+        $invoice->getALl();
     }
 
 }
