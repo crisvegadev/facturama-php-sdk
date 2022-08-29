@@ -1,31 +1,21 @@
-name: Testing
+name: CI
 
-on:
-  push:
-    branches:
-      - features/**
-      - main
-
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+*
+on: [push]
 
 jobs:
-  php-tests:
-
+  build-test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/labeler@v4
+      - uses: actions/checkout@v2
+
+      - uses: php-actions/composer@v6
+
+      - name: PHPUnit Tests
+        uses: php-actions/phpunit@v2
+        env:
+          TEST_NAME: Scarlett
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Install composer and dependencies
-        uses: php-actions/composer@v6
-
-      - name: Install dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader
-
-      - name: Execute tests
-        run: vendor/bin/phpunit
+          bootstrap: vendor/autoload.php
+          configuration: phpunit.xml
+          args: --coverage-text
