@@ -28,8 +28,8 @@ jobs:
         uses: php-actions/phpunit@v3
         env:
           XDEBUG_MODE: coverage
-          with:
-            bootstrap: vendor/autoload.php
-            configuration: phpunit.xml
-            php_extensions: xdebug
-            args: tests --coverage-clover ./coverage.xml
+        with:
+          bootstrap: vendor/autoload.php
+          configuration: phpunit.xml
+          php_extensions: xdebug
+          args: tests --coverage-clover ./coverage.xml
