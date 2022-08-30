@@ -3,7 +3,10 @@
 namespace Invoice;
 
 use Crisvegadev\Facturama\client\FacturamaClient;
-use Crisvegadev\Facturama\Service\InvoiceService;
+use Crisvegadev\Facturama\enums\InvoiceFileTypes;
+use Crisvegadev\Facturama\enums\InvoiceStatus;
+use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
+use Crisvegadev\Facturama\Service\ResponseData;
 use PHPUnit\Framework\TestCase;
 use Exception;
 use TypeError;
@@ -16,20 +19,24 @@ class DownloadInvoiceTest extends TestCase
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
         $facturamaClientMock->method('get')
-            ->willReturn((object)[
+            ->willReturn([
                 'statusCode' => 200,
                 'statusMessage' => 'Success',
-                'data' => []
+                'message' => '',
+                'data' => [],
+                'errors' => []
             ]);
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
-        $this->assertEquals((object)[
+        $this->assertEquals(ResponseData::fromArray([
             'statusCode' => 200,
             'statusMessage' => 'Success',
-            'data' => []
-        ], $invoice->streamFile('pdf', 'issued', '02'));
+            'message' => '',
+            'data' => [],
+            'errors' => []
+        ]), $invoice->streamFile(InvoiceFileTypes::Pdf, InvoiceStatus::Issued, '02'));
     }
 
     public function testCannotGetPDFonBase64IfAnyFieldIsMissing()

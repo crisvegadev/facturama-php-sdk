@@ -3,9 +3,10 @@
 namespace Invoice;
 
 use Crisvegadev\Facturama\client\FacturamaClient;
-use Crisvegadev\Facturama\Service\InvoiceService;
+use Crisvegadev\Facturama\enums\InvoiceStatus;
+use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
+use Crisvegadev\Facturama\Service\ResponseData;
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -16,20 +17,24 @@ class GetAllInvoicesTest extends TestCase{
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
         $facturamaClientMock->method('get')
-            ->willReturn((object)[
+            ->willReturn([
                 'statusCode' => 200,
                 'statusMessage' => 'Success',
-                'data' => []
+                'message' => '',
+                'data' => [],
+                'errors' => []
             ]);
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
-        $this->assertEquals((object)[
+        $this->assertEquals(ResponseData::fromArray([
             'statusCode' => 200,
             'statusMessage' => 'Success',
-            'data' => []
-        ], $invoice->getAll('issued'));
+            'message' => '',
+            'data' => [],
+            'errors' => []
+        ]), $invoice->getAll(InvoiceStatus::Issued));
     }
 
     public function testStatusMustBeProvided()
