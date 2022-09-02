@@ -1,8 +1,6 @@
 # Facturama SDK PHP (BETA)
 
-[NOTE] This is a custom fork and a unofficial library of [Facturama PHP SDK](https://github.com/Facturama/facturama-php-sdk)
-
-[NOTE] This library requires PHP 8.1 as minimum
+[NOTE] This is a custom library of [Facturama PHP SDK](https://github.com/Facturama/facturama-php-sdk)
 
 [NOTE] This library is for CFDI 4.0
 
