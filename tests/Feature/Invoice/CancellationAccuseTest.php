@@ -3,7 +3,10 @@
 namespace Invoice;
 
 use Crisvegadev\Facturama\client\FacturamaClient;
-use Crisvegadev\Facturama\Service\InvoiceService;
+use Crisvegadev\Facturama\enums\InvoiceFileTypes;
+use Crisvegadev\Facturama\enums\InvoiceStatus;
+use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
+use Crisvegadev\Facturama\Service\ResponseData;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -14,20 +17,24 @@ class CancellationAccuseTest extends TestCase{
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
         $facturamaClientMock->method('get')
-            ->willReturn((object)[
+            ->willReturn([
                 'statusCode' => 200,
                 'statusMessage' => 'Success',
-                'data' => []
+                'message' => '',
+                'data' => [],
+                'errors' => []
             ]);
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
-        $this->assertEquals((object)[
+        $this->assertEquals(ResponseData::fromArray([
             'statusCode' => 200,
             'statusMessage' => 'Success',
-            'data' => []
-        ], $invoice->cancellationAccuse('pdf', 'issued', '02', null));
+            'message' => '',
+            'data' => [],
+            'errors' => []
+        ]), $invoice->cancellationAccuse(InvoiceFileTypes::Pdf, InvoiceStatus::Issued, '02', null));
     }
 
     public function testCannotGetCancellationAcuseIfIdIsMissing(){
@@ -68,7 +75,7 @@ class CancellationAccuseTest extends TestCase{
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancellationAccuse(format: 1);
+        $invoice->cancellationAccuse(fileType: 1);
     }
 
     public function testTypeMustBeProvided()
@@ -82,7 +89,7 @@ class CancellationAccuseTest extends TestCase{
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancellationAccuse(format: 'pdf');
+        $invoice->cancellationAccuse(fileType: 'pdf');
 
     }
 
@@ -97,7 +104,7 @@ class CancellationAccuseTest extends TestCase{
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancellationAccuse(format: '1', type: 1);
+        $invoice->cancellationAccuse(fileType: '1', type: 1);
 
     }
 
@@ -112,7 +119,7 @@ class CancellationAccuseTest extends TestCase{
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancellationAccuse(format: 'pdf', type: 'issued');
+        $invoice->cancellationAccuse(fileType: 'pdf', type: 'issued');
 
     }
 
@@ -127,7 +134,7 @@ class CancellationAccuseTest extends TestCase{
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
         $this->expectException(TypeError::class);
-        $invoice->cancellationAccuse(format: '1', type: 'issued', id: 1);
+        $invoice->cancellationAccuse(fileType: '1', type: 'issued', id: 1);
 
     }
 

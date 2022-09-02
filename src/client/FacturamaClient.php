@@ -74,7 +74,7 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws NotFoundException
      * @throws ResponseException
      */
-    public function get(string $url, array $params = []): object
+    public function get(string $url, array $params = []): array
     {
         return $this->executeRequest('GET', $url, [RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
     }
@@ -88,7 +88,7 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws GuzzleException
      * @throws ResponseException
      */
-    public function post(string $url, array $body = [], array $params = []): object
+    public function post(string $url, array $body = [], array $params = []): array
     {
         return $this->executeRequest('POST', $url, [RequestOptions::JSON => $body, RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
     }
@@ -102,7 +102,7 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws NotFoundException
      * @throws ResponseException
      */
-    public function put(string $url, array $body = [], array $params = []): object
+    public function put(string $url, array $body = [], array $params = []): array
     {
         return $this->executeRequest('PUT', $url, [RequestOptions::JSON => $body, RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
     }
@@ -116,7 +116,7 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws GuzzleException
      * @throws ResponseException
      */
-    public function delete(string $url, array $params = []): object
+    public function delete(string $url, array $params = []): array
     {
         return $this->executeRequest('DELETE', $url, [RequestOptions::QUERY => $params, RequestOptions::HTTP_ERRORS => false]);
     }
@@ -130,7 +130,7 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws NotFoundException
      * @throws ResponseException
      */
-    public function executeRequest(string $method, string $url, array $options = []): object
+    public function executeRequest(string $method, string $url, array $options = []): array
     {
         $response = $this->client->request($method, $this->baseUri.$url, $options);
 
@@ -143,10 +143,12 @@ class FacturamaClient implements FacturamaClientInterface {
                 );
             }
 
-            return (object) [
+            return [
                 'statusCode' => $response->getStatusCode(),
                 'statusMessage' => $response->getReasonPhrase(),
-                'data' => $object ?? 'No Content'
+                'message' => 'Data successfully retrieved',
+                'data' => $object ?? [],
+                'errors' => [],
             ];
 
         } else if ($response->getStatusCode() === 400) {

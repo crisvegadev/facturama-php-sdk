@@ -1,10 +1,3 @@
-## Documentation
-
-* [Account](account.md)
-* [Customer](customer.md)
-* [Invoice](invoice.md)
-* [Product](product.md)
-
 ## Invoice
 
 ### Create a invoice
@@ -159,10 +152,10 @@ Example:
 
 For more information: [Facturama API Get Invoice](https://apisandbox.facturama.mx/docs/api/GET-Cfdi-id_type)
 
-| Parameter | Type   | Required ? | Values allowed                  |
-|-----------|--------|------------|---------------------------------|
-| `id`      | String | Yes        |                                 |
-| `type`    | String | Yes        | "issued", "received", "payroll" |
+| Parameter | Type          | Required ? | Values allowed            |
+|-----------|---------------|------------|---------------------------|
+| `id`      | String        | Yes        |                           |
+| `type`    | InvoiceStatus | Yes        | issued, received, payroll |
 
 <br>
 
@@ -173,7 +166,7 @@ For more information: [Facturama API Get Invoice](https://apisandbox.facturama.m
 Example:
 
 ```php
-\Crisvegadev\Facturama\Invoice::get("NH98VzHgdF8sFl1kFXXJ7A2", "issued");
+\Crisvegadev\Facturama\Invoice::get("NH98VzHgdF8sFl1kFXXJ7A2", InvoiceStatus::issued);
 ```
 
 *Response of type object*
@@ -251,11 +244,11 @@ For more information: [Facturama API Download Invoice](https://apisandbox.factur
 
 ### Parameters
 
-| Parameter | Type   | Required ? | Values allowed                  |
-|-----------|--------|------------|---------------------------------|
-| `format`  | String | Yes        | "pdf", "xml", "html"            |
-| `type`    | String | Yes        | "issued", "received", "payroll" |
-| `id`      | String | Yes        |                                 |
+| Parameter | Type             | Required ? | Values allowed            |
+|-----------|------------------|------------|---------------------------|
+| `format`  | InvoiceFileTypes | Yes        | pdf, xml, html            |
+| `type`    | InvoiceStatus    | Yes        | issued, received, payroll |
+| `id`      | String           | Yes        |                           |
 
 <br>
 
@@ -266,5 +259,5 @@ For more information: [Facturama API Download Invoice](https://apisandbox.factur
 Example:
 
 ```php
-\Crisvegadev\Facturama\Invoice::downloadFile("pdf", "issued", "7eo51BvzV-E16gBx3nnxfQ2");
+\Crisvegadev\Facturama\Invoice::downloadFile(InvoiceFileTypes::pdf, InvoiceStatus::issued, "7eo51BvzV-E16gBx3nnxfQ2");
 ```

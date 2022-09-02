@@ -34,8 +34,6 @@ FACTURAMA_PRODUCTION_PASSWORD=<your_password>
 
 #### Documentation:
 
-* [Customer](customer.md)
-* [Product](product.md)
 * [Invoice](invoice.md)
 
 ## Support

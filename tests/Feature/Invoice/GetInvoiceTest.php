@@ -3,7 +3,8 @@
 namespace Invoice;
 
 use Crisvegadev\Facturama\client\FacturamaClient;
-use Crisvegadev\Facturama\Service\InvoiceService;
+use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
+use Crisvegadev\Facturama\Service\ResponseData;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -13,20 +14,24 @@ class GetInvoiceTest extends TestCase{
         $facturamaClientMock = $this->createMock(FacturamaClient::class);
 
         $facturamaClientMock->method('get')
-            ->willReturn((object)[
+            ->willReturn([
                 'statusCode' => 200,
                 'statusMessage' => 'Success',
-                'data' => []
+                'message' => '',
+                'data' => [],
+                'errors' => []
             ]);
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
-        $this->assertEquals((object)[
+        $this->assertEquals(ResponseData::fromArray([
             'statusCode' => 200,
             'statusMessage' => 'Success',
-            'data' => []
-        ], $invoice->get('id'));
+            'message' => '',
+            'data' => [],
+            'errors' => []
+        ]), $invoice->get('id'));
     }
 
     public function testCannotGetAnInvoiceIfIdIsMissing(){

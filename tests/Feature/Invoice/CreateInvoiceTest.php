@@ -4,7 +4,8 @@ namespace Invoice;
 
 use Crisvegadev\Facturama\client\FacturamaClient;
 use Crisvegadev\Facturama\Exception\BadRequestException;
-use Crisvegadev\Facturama\Service\InvoiceService;
+use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
+use Crisvegadev\Facturama\Service\ResponseData;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use TypeError;
@@ -18,20 +19,24 @@ class CreateInvoiceTest extends TestCase
 
         $facturamaClientMock
             ->method('post')
-            ->willReturn((object)[
-                'statusCode' => 201,
+            ->willReturn([
+                'statusCode' => 200,
                 'statusMessage' => 'Success',
-                'data' => []
+                'message' => '',
+                'data' => [],
+                'errors' => []
             ]);
 
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
-        $this->assertEquals((object)[
-            'statusCode' => 201,
+        $this->assertEquals(ResponseData::fromArray([
+            'statusCode' => 200,
             'statusMessage' => 'Success',
-            'data' => []
-        ], $invoice->create(data: ['data' => 'data']));
+            'message' => '',
+            'data' => [],
+            'errors' => []
+        ]), $invoice->create(data: ['data' => 'data']));
     }
 
     public function testCannotCreateAnInvoiceIfAnyFieldIsMissing()
@@ -52,7 +57,7 @@ class CreateInvoiceTest extends TestCase
         $invoice = new InvoiceService($facturamaClient);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
-        $this->assertEquals((object)[
+        $this->assertEquals(ResponseData::fromArray([
             'statusCode' => 400,
             'statusMessage' => 'Invalid Request',
             'message' => 'El campo folio fiscal es obligatorio',
@@ -60,7 +65,7 @@ class CreateInvoiceTest extends TestCase
             'errors' => [
                 "error.general" => "An error occurred"
             ]
-        ], $invoice->create(['data' => 'data']));
+        ]), $invoice->create(['data' => 'data']));
 
     }
 
@@ -91,13 +96,13 @@ class CreateInvoiceTest extends TestCase
         $invoice = new InvoiceService($facturamaClientMock);
         $this->assertInstanceOf(InvoiceService::class, $invoice);
 
-        $this->assertEquals((object)[
+        $this->assertEquals(ResponseData::fromArray([
             'statusCode' => 0,
             'statusMessage' => 'App Error',
             'message' => 'No data provided',
             'data' => [],
             'errors' => []
-        ], $invoice->create(['data' => 'data']));
+        ]), $invoice->create(['data' => 'data']));
 
     }
 
