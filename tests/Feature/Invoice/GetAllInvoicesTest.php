@@ -34,7 +34,7 @@ class GetAllInvoicesTest extends TestCase{
             'message' => '',
             'data' => [],
             'errors' => []
-        ]), $invoice->getAll(InvoiceStatus::Issued));
+        ]), $invoice->getAll('issued'));
     }
 
     public function testStatusMustBeProvided()

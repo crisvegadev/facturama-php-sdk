@@ -77,11 +77,12 @@ Example:
     ]);
 ```
 
-*Response of type object*
+*Response of type ResponseData*
 ```json
 {
     "statusCode": 201,
     "statusMessage": "Created",
+    "message": "Invoice created successfully",
     "data": {
         "Id": "7eo51BvzV-E16gBx3nnxfQ2",
         "CfdiType": "ingreso",
@@ -143,7 +144,8 @@ Example:
                 "RfcProvCertif": "FLI081010EK2"
             }
         }
-    }
+    },
+    "errors": []
 }
 
 ```
@@ -152,10 +154,10 @@ Example:
 
 For more information: [Facturama API Get Invoice](https://apisandbox.facturama.mx/docs/api/GET-Cfdi-id_type)
 
-| Parameter | Type          | Required ? | Values allowed            |
-|-----------|---------------|------------|---------------------------|
-| `id`      | String        | Yes        |                           |
-| `type`    | InvoiceStatus | Yes        | issued, received, payroll |
+| Parameter | Type   | Required ? | Values allowed            |
+|-----------|--------|------------|---------------------------|
+| `id`      | String | Yes        |                           |
+| `type`    | string | Yes        | issued, received, payroll |
 
 <br>
 
@@ -174,6 +176,7 @@ Example:
 {
     "statusCode": 200,
     "statusMessage": "OK",
+    "message": "Invoice found successfully",
     "data": {
         "Id": "7eo51BvzV-E16gBx3nnxfQ2",
         "CfdiType": "ingreso",
@@ -235,29 +238,51 @@ Example:
                 "RfcProvCertif": "FLI081010EK2"
             }
         }
-    }
+    },
+    "errors": []
 }
 ```
-### Download the pdf file
+
+### Cancel invoice
 
 For more information: [Facturama API Download Invoice](https://apisandbox.facturama.mx/docs/api/GET-Cfdi-format-type-id)
 
 ### Parameters
 
-| Parameter | Type             | Required ? | Values allowed            |
-|-----------|------------------|------------|---------------------------|
-| `format`  | InvoiceFileTypes | Yes        | pdf, xml, html            |
-| `type`    | InvoiceStatus    | Yes        | issued, received, payroll |
-| `id`      | String           | Yes        |                           |
+| Parameter         | Type   | Required ? | Values allowed            |
+|-------------------|--------|------------|---------------------------|
+| `id`              | string | Yes        | pdf, xml, html            |
+| `type`            | string | Yes        | issued, received, payroll |
+| `motive`          | String | Yes        |                           |
+ | `uuidReplacement` | String | Optional   |                           |
 
 <br>
 
 ```php
-\Crisvegadev\Facturama\Invoice::downloadFile({format}, {type}, {id});
+\Crisvegadev\Facturama\Invoice::cancel({id}, {type}, {motive});
 ```
 
 Example:
 
 ```php
-\Crisvegadev\Facturama\Invoice::downloadFile(InvoiceFileTypes::pdf, InvoiceStatus::issued, "7eo51BvzV-E16gBx3nnxfQ2");
+\Crisvegadev\Facturama\Invoice::cancel('_-tNLA...Lw2', 'issued', '03');
+```
+
+*Response of type ResponseData*
+```object
+{
+    statusCode: 200,
+    statusMessage: "OK",
+    message: "Data successfully retrieved",
+    data: {
+        "Status": "canceled",
+        "Message": "CFDI cancelado",
+        "Uuid": "720B41AB-B74E-4FBA-AB20-A...",
+        "RequestDate": "2022-08-25T15:31:15",
+        "ExpirationDate": "2022-08-26T15:31:15",
+        "AcuseXmlBase64": "PD94bWwgdmVyc2lvbj0iMS4....3d3dy53My5vcmcv",
+        "CancelationDate": "2022-08-25T15:31:15"
+    },
+    errors: []
+}
 ```

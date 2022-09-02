@@ -31,7 +31,7 @@ class GetInvoiceTest extends TestCase{
             'message' => '',
             'data' => [],
             'errors' => []
-        ]), $invoice->get('id'));
+        ]), $invoice->get('id','issued'));
     }
 
     public function testCannotGetAnInvoiceIfIdIsMissing(){

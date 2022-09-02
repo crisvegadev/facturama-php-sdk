@@ -12,13 +12,13 @@ interface InvoiceServiceInterface
 
     function get(string $id): ResponseData;
 
-    function getAll(InvoiceStatus $type): ResponseData;
+    function getAll(string $type): ResponseData;
 
-    function cancel(string $id, InvoiceStatus $type, string $motive, string $uuidReplacement = null): ResponseData;
+    function cancel(string $id, string $type, string $motive, string $uuidReplacement = null): ResponseData;
 
-    function cancellationAccuse(InvoiceFileTypes $fileType, InvoiceStatus $type, string $id): ResponseData;
+    function cancellationAccuse(string $fileType, string $type, string $id): ResponseData;
 
-    function streamFile(InvoiceFileTypes $fileType, InvoiceStatus $type, string $id): ResponseData;
+    function streamFile(string $fileType, string $type, string $id): ResponseData;
 
     static function formatError(object $response): array;
 

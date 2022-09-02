@@ -33,7 +33,7 @@ class CancelInvoiceTest extends TestCase{
             'message' => '',
             'data' => [],
             'errors' => []
-        ]), $invoice->cancel('id', InvoiceStatus::Issued, '02', null));
+        ]), $invoice->cancel('id', 'issued', '02', null));
     }
 
     public function testCannotCancelAnInvoiceIfIdIsMissing(){

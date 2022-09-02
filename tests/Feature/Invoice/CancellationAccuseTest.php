@@ -34,7 +34,7 @@ class CancellationAccuseTest extends TestCase{
             'message' => '',
             'data' => [],
             'errors' => []
-        ]), $invoice->cancellationAccuse(InvoiceFileTypes::Pdf, InvoiceStatus::Issued, '02', null));
+        ]), $invoice->cancellationAccuse('pdf', 'issued', '02', null));
     }
 
     public function testCannotGetCancellationAcuseIfIdIsMissing(){

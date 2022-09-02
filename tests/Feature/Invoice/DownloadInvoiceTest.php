@@ -36,7 +36,7 @@ class DownloadInvoiceTest extends TestCase
             'message' => '',
             'data' => [],
             'errors' => []
-        ]), $invoice->streamFile(InvoiceFileTypes::Pdf, InvoiceStatus::Issued, '02'));
+        ]), $invoice->streamFile('pdf', 'issued', '02'));
     }
 
     public function testCannotGetPDFonBase64IfAnyFieldIsMissing()

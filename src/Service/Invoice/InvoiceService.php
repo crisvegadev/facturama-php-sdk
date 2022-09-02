@@ -88,7 +88,7 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * Get the invoice requested
      *
-     * @param InvoiceStatus $type = ( payroll | issued )
+     * @param string $type = ( payroll | issued )
      * @param string $id = id of the invoice
      *
      * @return ResponseData
@@ -96,12 +96,12 @@ class InvoiceService implements InvoiceServiceInterface
      * @throws Exception
      * @throws GuzzleException
      */
-    public function get(string $id, InvoiceStatus $type = InvoiceStatus::Issued): ResponseData
+    public function get(string $id, string $type = 'issued'): ResponseData
     {
         try {
 
 
-            return ResponseData::fromArray($this->client->get('cfdi/'.$id, ["type" => $type->toString()]));
+            return ResponseData::fromArray($this->client->get('cfdi/'.$id, ["type" => $type]));
 
         } catch (UnauthorizedException $e) {
 
@@ -162,18 +162,18 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * Get the invoice requested
      *
-     * @param InvoiceStatus $type = ( payroll | issued )
+     * @param string $type = ( payroll | issued )
      *
      * @return ResponseData
      *
      * @throws Exception
      * @throws GuzzleException
      */
-    public function getAll(InvoiceStatus $type): ResponseData
+    public function getAll(string $type): ResponseData
     {
         try {
 
-            return ResponseData::fromArray($this->client->get('cfdi/', ["type" => $type->toString()]));
+            return ResponseData::fromArray($this->client->get('cfdi/', ["type" => $type]));
 
         } catch (UnauthorizedException $e) {
 
@@ -236,7 +236,7 @@ class InvoiceService implements InvoiceServiceInterface
      *
      * @param string $id = id of the invoice
      *
-     * @param InvoiceStatus $type = ( payroll | issued | received )
+     * @param string $type = ( payroll | issued | received )
      * @param string $motive = ( 01 - Comprobante emitido con errores con relación | 02 - Comprobante emitido con errores sin relación | 03 - No se llevó a cabo la operación | 04 - Operación nominativa relacionada con una factura global )
      * @param string|null $uuidReplacement
      * @return ResponseData
@@ -244,11 +244,11 @@ class InvoiceService implements InvoiceServiceInterface
      * @throws Exception
      * @throws GuzzleException
      */
-    public function cancel(string $id, InvoiceStatus $type, string $motive, string $uuidReplacement = null): ResponseData
+    public function cancel(string $id, string $type, string $motive, string $uuidReplacement = null): ResponseData
     {
         try {
 
-            return ResponseData::fromArray($this->client->delete("cfdi/$id?type=$type->value&motive=$motive&uuidReplacement=$uuidReplacement", []));
+            return ResponseData::fromArray($this->client->delete("cfdi/$id?type=$type&motive=$motive&uuidReplacement=$uuidReplacement", []));
 
         } catch (UnauthorizedException $e) {
 
@@ -309,8 +309,8 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * return PDF base64 string of cancelled invoice of SAT
      *
-     * @param InvoiceFileTypes $fileType =  ( pdf | html )
-     * @param InvoiceStatus $type = ( payroll | issued )
+     * @param string $fileType =  ( pdf | html )
+     * @param string $type = ( payroll | issued )
      * @param string $id = id of the invoice
      *
      * @return ResponseData
@@ -318,11 +318,11 @@ class InvoiceService implements InvoiceServiceInterface
      * @throws Exception
      * @throws GuzzleException
      */
-    public function cancellationAccuse(InvoiceFileTypes $fileType, InvoiceStatus $type, string $id): ResponseData
+    public function cancellationAccuse(string $fileType, string $type, string $id): ResponseData
     {
         try {
 
-            return ResponseData::fromArray($this->client->get("acuse/$fileType->value/$type->value/$id", []));
+            return ResponseData::fromArray($this->client->get("acuse/$fileType/$type/$id", []));
 
         } catch (UnauthorizedException $e) {
 
@@ -383,8 +383,8 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * Stream file to browser
      *
-     * @param InvoiceFileTypes $fileType =  ( pdf | html, xml )
-     * @param InvoiceStatus $type = ( payroll | issued )
+     * @param string $fileType =  ( pdf | html, xml )
+     * @param string $type = ( payroll | issued )
      * @param string $id = id of the invoice
      *
      * @return ResponseData
@@ -392,16 +392,16 @@ class InvoiceService implements InvoiceServiceInterface
      * @throws Exception
      * @throws GuzzleException
      */
-    public function streamFile(InvoiceFileTypes $fileType, InvoiceStatus $type, string $id): ResponseData
+    public function streamFile(string $fileType, string $type, string $id): ResponseData
     {
         try {
             $allowedFileType = ['pdf', 'xml', 'html'];
 
-            if (!in_array($fileType->toString(), $allowedFileType)) {
+            if (!in_array($fileType, $allowedFileType)) {
                 throw new Exception('El tipo de archivo no es válido');
             }
 
-            return ResponseData::fromArray($this->client->get('cfdi/'.$fileType->toString().'/'.$type->toString().'/'.$id, []));
+            return ResponseData::fromArray($this->client->get('cfdi/'.$fileType.'/'.$type.'/'.$id, []));
 
         } catch (UnauthorizedException $e) {
 
