@@ -2,7 +2,7 @@
 
 [NOTE] This is a custom fork and a unofficial library of [Facturama PHP SDK](https://github.com/Facturama/facturama-php-sdk)
 
-[NOTE] This library requires PHP 5.6 as minimum
+[NOTE] This library requires PHP 8.1 as minimum
 
 [NOTE] This library is for CFDI 4.0
 
@@ -29,6 +29,5 @@ FACTURAMA_PRODUCTION_PASSWORD=<your_password>
 ## API operations
 
 - Create, get CFDIs; download XMLs and PDFs;
-- CRUDs for Product, Customer, Branch office and series.
 
 *All operations will be reflected on Facturama's web app.*
