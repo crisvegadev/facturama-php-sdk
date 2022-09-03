@@ -30,9 +30,7 @@ class FacturamaGuzzleClient implements FacturamaClientInterface {
 
     private array $errors = [];
 
-    private array $requestOptions = [];
-
-    private ClientInterface|GuzzleClient $client;
+    private GuzzleClient $client;
 
     /**
      * @throws AppException
@@ -57,14 +55,14 @@ class FacturamaGuzzleClient implements FacturamaClientInterface {
 
         if(isset($this->username) && isset($this->password)){
 
-            $this->requestOptions = [
+            $requestOptions = [
                 RequestOptions::HEADERS => ['User-Agent' => self::USER_AGENT],
                 RequestOptions::AUTH => [$this->username, $this->password],
                 RequestOptions::CONNECT_TIMEOUT => 10,
                 RequestOptions::TIMEOUT => 60,
             ];
 
-            $this->client = new GuzzleClient($this->requestOptions);
+            $this->client = new GuzzleClient($requestOptions);
 
         }else{
             throw new AppException('You must provide a username and password');
