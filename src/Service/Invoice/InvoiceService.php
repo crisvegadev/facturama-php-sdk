@@ -8,7 +8,6 @@ use Crisvegadev\Facturama\Exception\BadRequestException;
 use Crisvegadev\Facturama\Exception\NotFoundException;
 use Crisvegadev\Facturama\Exception\ServerException;
 use Crisvegadev\Facturama\Service\ResponseData;
-use GuzzleHttp\Exception\GuzzleException;
 use Exception;
 
 
@@ -25,7 +24,6 @@ class InvoiceService implements InvoiceServiceInterface
      * @return ResponseData
      *
      * @throws Exception
-     * @throws GuzzleException
      */
     public function create(array $data): ResponseData
     {
