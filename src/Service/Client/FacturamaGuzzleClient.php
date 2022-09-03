@@ -1,31 +1,38 @@
-<?php declare(strict_types=1);
+<?php /** @noinspection ALL */
+declare(strict_types=1);
 
-namespace Crisvegadev\Facturama\client;
+namespace Crisvegadev\Facturama\Service\Client;
 
-use Crisvegadev\Facturama\Exception\AppException;
-use Crisvegadev\Facturama\Exception\BadRequestException;
-use Crisvegadev\Facturama\Exception\NotFoundException;
-use Crisvegadev\Facturama\Exception\ResponseException;
-use Crisvegadev\Facturama\Exception\ServerException;
 use Crisvegadev\Facturama\Exception\UnauthorizedException;
-use Dotenv\Dotenv;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\ClientInterface;
+use Crisvegadev\Facturama\Exception\BadRequestException;
+use Crisvegadev\Facturama\Service\Guzzle\GuzzleService;
+use Crisvegadev\Facturama\Exception\ResponseException;
+use Crisvegadev\Facturama\Exception\NotFoundException;
+use Crisvegadev\Facturama\Exception\ServerException;
+use Crisvegadev\Facturama\Exception\AppException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client as GuzzleClient;
+use Crisvegadev\Facturama\Container;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\RequestOptions;
+use Dotenv\Dotenv;
 
-class FacturamaClient implements FacturamaClientInterface {
+class FacturamaGuzzleClient implements FacturamaClientInterface {
 
     const VERSION = '2.0.0';
     const USER_AGENT = 'Facturama-PHP-SDK-CFDI4';
-
-    private ClientInterface|GuzzleClient $client;
 
     private string $baseUri ;
     private string $username;
     private string $password;
 
     private array $errors = [];
+
+    private array $requestOptions = [];
+
+    private ClientInterface|GuzzleClient $client;
 
     /**
      * @throws AppException
@@ -50,14 +57,14 @@ class FacturamaClient implements FacturamaClientInterface {
 
         if(isset($this->username) && isset($this->password)){
 
-            $requestOptions = [
+            $this->requestOptions = [
                 RequestOptions::HEADERS => ['User-Agent' => self::USER_AGENT],
                 RequestOptions::AUTH => [$this->username, $this->password],
                 RequestOptions::CONNECT_TIMEOUT => 10,
                 RequestOptions::TIMEOUT => 60,
             ];
 
-            $this->client = new GuzzleClient($requestOptions);
+            $this->client = new GuzzleClient($this->requestOptions);
 
         }else{
             throw new AppException('You must provide a username and password');
@@ -70,7 +77,6 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws AppException
      * @throws UnauthorizedException
      * @throws ServerException
-     * @throws GuzzleException
      * @throws NotFoundException
      * @throws ResponseException
      */
@@ -85,7 +91,6 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws UnauthorizedException
      * @throws ServerException
      * @throws NotFoundException
-     * @throws GuzzleException
      * @throws ResponseException
      */
     public function post(string $url, array $body = [], array $params = []): array
@@ -98,7 +103,6 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws AppException
      * @throws UnauthorizedException
      * @throws ServerException
-     * @throws GuzzleException
      * @throws NotFoundException
      * @throws ResponseException
      */
@@ -113,7 +117,6 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws UnauthorizedException
      * @throws ServerException
      * @throws NotFoundException
-     * @throws GuzzleException
      * @throws ResponseException
      */
     public function delete(string $url, array $params = []): array
@@ -126,12 +129,12 @@ class FacturamaClient implements FacturamaClientInterface {
      * @throws AppException
      * @throws UnauthorizedException
      * @throws ServerException
-     * @throws GuzzleException
      * @throws NotFoundException
      * @throws ResponseException
      */
     public function executeRequest(string $method, string $url, array $options = []): array
     {
+
         $response = $this->client->request($method, $this->baseUri.$url, $options);
 
         if ($response->getStatusCode() === 200 || $response->getStatusCode() === 201 || $response->getStatusCode() === 204) { // 200 = OK, 201 = Created

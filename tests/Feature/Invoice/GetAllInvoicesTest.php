@@ -2,8 +2,7 @@
 
 namespace Invoice;
 
-use Crisvegadev\Facturama\client\FacturamaClient;
-use Crisvegadev\Facturama\enums\InvoiceStatus;
+use Crisvegadev\Facturama\Service\Client\FacturamaGuzzleClient;
 use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
 use Crisvegadev\Facturama\Service\ResponseData;
 use Exception;
@@ -14,7 +13,7 @@ class GetAllInvoicesTest extends TestCase{
 
     public function testCanGetAllInvoices(): void
     {
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willReturn([
@@ -39,7 +38,7 @@ class GetAllInvoicesTest extends TestCase{
 
     public function testStatusMustBeProvided()
     {
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new Exception('No status provided'));

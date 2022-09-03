@@ -6,6 +6,7 @@ use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
 use Crisvegadev\Facturama\Service\ResponseData;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
 
 class Invoice{
 
@@ -18,7 +19,7 @@ class Invoice{
      *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function create(array $data): ResponseData
     {
@@ -35,7 +36,7 @@ class Invoice{
      *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function get(string $id, string $type): ResponseData
     {
@@ -50,7 +51,7 @@ class Invoice{
      *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function getAll(string $type): ResponseData
     {
@@ -69,7 +70,7 @@ class Invoice{
      *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function cancel(string $id, string $type, string $motive, string $uuidReplacement = null): ResponseData
     {
@@ -87,7 +88,7 @@ class Invoice{
      *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function cancellationAccuse(string $format, string $type, string $id): ResponseData
     {
@@ -103,7 +104,7 @@ class Invoice{
      *
      * @return ResponseData
      * @throws ContainerExceptionInterface
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function streamFile(string $fileType, string $type, string $id): ResponseData
     {

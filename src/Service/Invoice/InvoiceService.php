@@ -2,13 +2,11 @@
 
 namespace Crisvegadev\Facturama\Service\Invoice;
 
-use Crisvegadev\Facturama\client\FacturamaClient;
-use Crisvegadev\Facturama\enums\InvoiceFileTypes;
-use Crisvegadev\Facturama\enums\InvoiceStatus;
+use Crisvegadev\Facturama\Service\Client\FacturamaGuzzleClient;
+use Crisvegadev\Facturama\Exception\UnauthorizedException;
 use Crisvegadev\Facturama\Exception\BadRequestException;
 use Crisvegadev\Facturama\Exception\NotFoundException;
 use Crisvegadev\Facturama\Exception\ServerException;
-use Crisvegadev\Facturama\Exception\UnauthorizedException;
 use Crisvegadev\Facturama\Service\ResponseData;
 use GuzzleHttp\Exception\GuzzleException;
 use Exception;
@@ -17,7 +15,7 @@ use Exception;
 class InvoiceService implements InvoiceServiceInterface
 {
 
-    public function __construct(protected FacturamaClient $client){}
+    public function __construct(protected FacturamaGuzzleClient $client){}
 
     /**
      * Create a new invoice
@@ -49,7 +47,6 @@ class InvoiceService implements InvoiceServiceInterface
                 []
             );
 
-
         } catch (ServerException $e) {
 
             return new ResponseData(
@@ -60,7 +57,6 @@ class InvoiceService implements InvoiceServiceInterface
                 self::formatError($e->response)
             );
 
-
         } catch (BadRequestException $e){
 
             return new ResponseData(
@@ -70,7 +66,6 @@ class InvoiceService implements InvoiceServiceInterface
                 [],
                 self::formatError($e->response)
             );
-
 
         } catch (Exception $e) {
 
@@ -94,12 +89,10 @@ class InvoiceService implements InvoiceServiceInterface
      * @return ResponseData
      *
      * @throws Exception
-     * @throws GuzzleException
      */
     public function get(string $id, string $type = 'issued'): ResponseData
     {
         try {
-
 
             return ResponseData::fromArray($this->client->get('cfdi/'.$id, ["type" => $type]));
 
@@ -123,7 +116,6 @@ class InvoiceService implements InvoiceServiceInterface
                 []
             );
 
-
         } catch (ServerException $e) {
 
             return new ResponseData(
@@ -134,7 +126,6 @@ class InvoiceService implements InvoiceServiceInterface
                 self::formatError($e->response)
             );
 
-
         } catch (BadRequestException $e){
 
             return new ResponseData(
@@ -144,7 +135,6 @@ class InvoiceService implements InvoiceServiceInterface
                 [],
                 self::formatError($e->response)
             );
-
 
         } catch (Exception $e) {
 
@@ -167,7 +157,6 @@ class InvoiceService implements InvoiceServiceInterface
      * @return ResponseData
      *
      * @throws Exception
-     * @throws GuzzleException
      */
     public function getAll(string $type): ResponseData
     {
@@ -195,7 +184,6 @@ class InvoiceService implements InvoiceServiceInterface
                 []
             );
 
-
         } catch (ServerException $e) {
 
             return new ResponseData(
@@ -206,7 +194,6 @@ class InvoiceService implements InvoiceServiceInterface
                 self::formatError($e->response)
             );
 
-
         } catch (BadRequestException $e){
 
             return new ResponseData(
@@ -216,7 +203,6 @@ class InvoiceService implements InvoiceServiceInterface
                 [],
                 self::formatError($e->response)
             );
-
 
         } catch (Exception $e) {
 
@@ -242,7 +228,6 @@ class InvoiceService implements InvoiceServiceInterface
      * @return ResponseData
      *
      * @throws Exception
-     * @throws GuzzleException
      */
     public function cancel(string $id, string $type, string $motive, string $uuidReplacement = null): ResponseData
     {
@@ -270,7 +255,6 @@ class InvoiceService implements InvoiceServiceInterface
                 []
             );
 
-
         } catch (ServerException $e) {
 
             return new ResponseData(
@@ -281,7 +265,6 @@ class InvoiceService implements InvoiceServiceInterface
                 self::formatError($e->response)
             );
 
-
         } catch (BadRequestException $e){
 
             return new ResponseData(
@@ -291,7 +274,6 @@ class InvoiceService implements InvoiceServiceInterface
                 [],
                 self::formatError($e->response)
             );
-
 
         } catch (Exception $e) {
 
@@ -316,7 +298,6 @@ class InvoiceService implements InvoiceServiceInterface
      * @return ResponseData
      *
      * @throws Exception
-     * @throws GuzzleException
      */
     public function cancellationAccuse(string $fileType, string $type, string $id): ResponseData
     {
@@ -344,7 +325,6 @@ class InvoiceService implements InvoiceServiceInterface
                 []
             );
 
-
         } catch (ServerException $e) {
 
             return new ResponseData(
@@ -355,7 +335,6 @@ class InvoiceService implements InvoiceServiceInterface
                 self::formatError($e->response)
             );
 
-
         } catch (BadRequestException $e){
 
             return new ResponseData(
@@ -365,7 +344,6 @@ class InvoiceService implements InvoiceServiceInterface
                 [],
                 self::formatError($e->response)
             );
-
 
         } catch (Exception $e) {
 
@@ -390,7 +368,6 @@ class InvoiceService implements InvoiceServiceInterface
      * @return ResponseData
      *
      * @throws Exception
-     * @throws GuzzleException
      */
     public function streamFile(string $fileType, string $type, string $id): ResponseData
     {
@@ -423,7 +400,6 @@ class InvoiceService implements InvoiceServiceInterface
                 []
             );
 
-
         } catch (ServerException $e) {
 
             return new ResponseData(
@@ -434,7 +410,6 @@ class InvoiceService implements InvoiceServiceInterface
                 self::formatError($e->response)
             );
 
-
         } catch (BadRequestException $e){
 
             return new ResponseData(
@@ -444,7 +419,6 @@ class InvoiceService implements InvoiceServiceInterface
                 [],
                 self::formatError($e->response)
             );
-
 
         } catch (Exception $e) {
 
@@ -458,7 +432,6 @@ class InvoiceService implements InvoiceServiceInterface
 
         }
     }
-
 
     /**
      * Create a new invoice
@@ -487,4 +460,5 @@ class InvoiceService implements InvoiceServiceInterface
 
         return $errors;
     }
+
 }

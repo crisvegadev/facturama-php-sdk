@@ -2,9 +2,7 @@
 
 namespace Invoice;
 
-use Crisvegadev\Facturama\client\FacturamaClient;
-use Crisvegadev\Facturama\enums\InvoiceFileTypes;
-use Crisvegadev\Facturama\enums\InvoiceStatus;
+use Crisvegadev\Facturama\Service\Client\FacturamaGuzzleClient;
 use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
 use Crisvegadev\Facturama\Service\ResponseData;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +12,7 @@ class CancellationAccuseTest extends TestCase{
 
     public function testCanGetCancellationAcuse()
     {
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willReturn([
@@ -38,7 +36,7 @@ class CancellationAccuseTest extends TestCase{
     }
 
     public function testCannotGetCancellationAcuseIfIdIsMissing(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
@@ -52,7 +50,7 @@ class CancellationAccuseTest extends TestCase{
 
     public function testFormatMustBeProvided()
     {
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
@@ -66,7 +64,7 @@ class CancellationAccuseTest extends TestCase{
     }
 
     public function testFormatMustBeString(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
@@ -80,7 +78,7 @@ class CancellationAccuseTest extends TestCase{
 
     public function testTypeMustBeProvided()
     {
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
@@ -95,7 +93,7 @@ class CancellationAccuseTest extends TestCase{
 
     public function testTypeMustBeString()
     {
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
@@ -110,7 +108,7 @@ class CancellationAccuseTest extends TestCase{
 
     public function testIdMustBeProvided()
     {
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
@@ -125,7 +123,7 @@ class CancellationAccuseTest extends TestCase{
 
     public function testIdMustBeString()
     {
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());

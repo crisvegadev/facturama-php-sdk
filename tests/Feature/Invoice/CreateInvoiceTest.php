@@ -2,8 +2,8 @@
 
 namespace Invoice;
 
-use Crisvegadev\Facturama\client\FacturamaClient;
 use Crisvegadev\Facturama\Exception\BadRequestException;
+use Crisvegadev\Facturama\Service\Client\FacturamaGuzzleClient;
 use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
 use Crisvegadev\Facturama\Service\ResponseData;
 use Exception;
@@ -15,7 +15,7 @@ class CreateInvoiceTest extends TestCase
 
     public function testCanCreateAnInvoiceIfAllIsSuccess(): void
     {
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock
             ->method('post')
@@ -41,7 +41,7 @@ class CreateInvoiceTest extends TestCase
 
     public function testCannotCreateAnInvoiceIfAnyFieldIsMissing()
     {
-        $facturamaClient = $this->createMock(FacturamaClient::class);
+        $facturamaClient = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClient
             ->method('post')
@@ -72,7 +72,7 @@ class CreateInvoiceTest extends TestCase
     public function testDataMustBeArray()
     {
 
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('post')
             ->willThrowException(new TypeError());
@@ -88,7 +88,7 @@ class CreateInvoiceTest extends TestCase
     public function testDataMustNotBeEmpty()
     {
 
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('post')
             ->willThrowException(new Exception('No data provided'));

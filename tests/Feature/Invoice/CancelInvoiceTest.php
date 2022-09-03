@@ -2,8 +2,7 @@
 
 namespace Invoice;
 
-use Crisvegadev\Facturama\client\FacturamaClient;
-use Crisvegadev\Facturama\enums\InvoiceStatus;
+use Crisvegadev\Facturama\Service\Client\FacturamaGuzzleClient;
 use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
 use Crisvegadev\Facturama\Service\ResponseData;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +12,7 @@ use Exception;
 class CancelInvoiceTest extends TestCase{
 
     public function testCanCancelAnInvoice(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('delete')
             ->willReturn([
@@ -37,7 +36,7 @@ class CancelInvoiceTest extends TestCase{
     }
 
     public function testCannotCancelAnInvoiceIfIdIsMissing(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('delete')
             ->willThrowException(new TypeError());
@@ -50,7 +49,7 @@ class CancelInvoiceTest extends TestCase{
     }
 
     public function testIdMustBeString(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('delete')
             ->willThrowException(new TypeError());
@@ -63,7 +62,7 @@ class CancelInvoiceTest extends TestCase{
     }
 
     public function testTypeMustBeProvided(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('delete')
             ->willThrowException(new Exception('No status provided'));
@@ -76,7 +75,7 @@ class CancelInvoiceTest extends TestCase{
     }
 
     public function testTypeMustBeString(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('delete')
             ->willThrowException(new TypeError());
@@ -89,7 +88,7 @@ class CancelInvoiceTest extends TestCase{
     }
 
     public function testMotiveMustBeProvided(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('delete')
             ->willThrowException(new Exception('No status provided'));
@@ -102,7 +101,7 @@ class CancelInvoiceTest extends TestCase{
     }
 
     public function testMotiveMustBeString(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('delete')
             ->willThrowException(new TypeError());
@@ -115,7 +114,7 @@ class CancelInvoiceTest extends TestCase{
     }
 
     public function testUuidReplacementMustBeString(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('post')
             ->willThrowException(new TypeError());

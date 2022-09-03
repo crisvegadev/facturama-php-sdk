@@ -2,16 +2,17 @@
 
 namespace Invoice;
 
-use Crisvegadev\Facturama\client\FacturamaClient;
+use Crisvegadev\Facturama\Service\Client\FacturamaGuzzleClient;
 use Crisvegadev\Facturama\Service\Invoice\InvoiceService;
 use Crisvegadev\Facturama\Service\ResponseData;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
-class GetInvoiceTest extends TestCase{
+class GetInvoiceTest extends TestCase {
 
     public function testCanGetAnInvoiceById(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willReturn([
@@ -35,7 +36,7 @@ class GetInvoiceTest extends TestCase{
     }
 
     public function testCannotGetAnInvoiceIfIdIsMissing(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
@@ -48,7 +49,7 @@ class GetInvoiceTest extends TestCase{
     }
 
     public function testIdMustBeString(){
-        $facturamaClientMock = $this->createMock(FacturamaClient::class);
+        $facturamaClientMock = $this->createMock(FacturamaGuzzleClient::class);
 
         $facturamaClientMock->method('get')
             ->willThrowException(new TypeError());
