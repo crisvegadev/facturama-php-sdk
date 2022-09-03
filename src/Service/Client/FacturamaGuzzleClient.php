@@ -135,6 +135,8 @@ class FacturamaGuzzleClient implements FacturamaClientInterface {
 
         $response = $this->client->request($method, $this->baseUri.$url, $options);
 
+        dd($response->getBody()->getContents());
+
         if ($response->getStatusCode() === 200 || $response->getStatusCode() === 201 || $response->getStatusCode() === 204) { // 200 = OK, 201 = Created
             $content = trim($response->getBody()->getContents());
 
