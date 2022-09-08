@@ -14,8 +14,8 @@
         "php": "^8.0",
         "ext-curl": "*",
         "ext-openssl": "*",
-        "guzzlehttp/guzzle": "^7.0",
-        "vlucas/phpdotenv": "^4.2.2",
+        "guzzlehttp/guzzle": "^7.5",
+        "vlucas/phpdotenv": "^5.4",
         "psr/container": "^2.0.0"
     },
     "require-dev": {
