@@ -33,7 +33,7 @@ class InvoiceService implements InvoiceServiceInterface
                 throw new Exception('No data provided');
             }
 
-            return ResponseData::fromArray($this->client->post('/3/cfdis', $data));
+            return ResponseData::fromArray( $this->client->post('/3/cfdis', $data) );
 
         } catch (NotFoundException $e) {
 
